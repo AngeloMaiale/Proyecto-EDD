@@ -19,7 +19,7 @@ void menu() {
     cout << "5. Insertar nuevo mago\n";
     cout << "6. Eliminar mago (sin hijos)\n";
     cout << "7. Ver hechizos heredados de un mago\n";
-    cout << "8. Asignar nuevo dueño automaticamente\n";
+    cout << "8. Asignar nuevo dueno automaticamente\n";
     cout << "9. Guardar cambios\n";
     cout << "0. Salir\n";
     cout << "Elige una opcion: ";
@@ -36,12 +36,12 @@ void buscarMago(MagicTree& arbol) {
         cout << "\nInformacion del mago:\n";
         cout << "ID: " << encontrado->content.id << "\n";
         cout << "Nombre: " << encontrado->content.name << " " << encontrado->content.last_name << "\n";
-        cout << "Género: " << encontrado->content.gender << "\n";
+        cout << "Genero: " << encontrado->content.gender << "\n";
         cout << "Edad: " << encontrado->content.age << "\n";
         cout << "ID Padre: " << encontrado->content.id_father << "\n";
         cout << "Estado: " << (encontrado->content.is_dead ? "Muerto" : "Vivo") << "\n";
         cout << "Tipo de magia: " << encontrado->content.type_magic << "\n";
-        cout << "Dueño del hechizo: " << (encontrado->content.is_owner ? "Si" : "No") << "\n";
+        cout << "Dueno del hechizo: " << (encontrado->content.is_owner ? "Si" : "No") << "\n";
     } else {
         cout << "Mago no encontrado.\n";
     }
@@ -72,7 +72,7 @@ void actualizarMago(MagicTree& arbol) {
     getline(cin, input);
     if (!input.empty()) actualizado.last_name = input;
     
-    cout << "Género (" << existente->content.gender << "): ";
+    cout << "Genero (" << existente->content.gender << "): ";
     getline(cin, input);
     if (!input.empty()) actualizado.gender = input[0];
     
@@ -88,7 +88,7 @@ void actualizarMago(MagicTree& arbol) {
     getline(cin, input);
     if (!input.empty()) actualizado.type_magic = input;
     
-    cout << "¿Es dueño? (" << (existente->content.is_owner ? "Si" : "No") << "), 1=Si 0=No: ";
+    cout << "¿Es dueno? (" << (existente->content.is_owner ? "Si" : "No") << "), 1=Si 0=No: ";
     getline(cin, input);
     if (!input.empty()) actualizado.is_owner = (input == "1");
     
@@ -120,14 +120,14 @@ void insertarMago(MagicTree& arbol) {
     cout << "Ingrese ID del padre (0 si no tiene): ";
     cin >> nuevo.id_father;
     
-    cout << "Esta muerto? (1=Sí, 0=No): ";
+    cout << "Esta muerto? (1=Si, 0=No): ";
     cin >> nuevo.is_dead;
     
     limpiarBuffer();
     cout << "Ingrese tipo de magia (elemental, unique, mixed, no_magic): ";
     getline(cin, nuevo.type_magic);
     
-    cout << "Es dueño? (1=Si, 0=No): ";
+    cout << "Es dueno? (1=Si, 0=No): ";
     cin >> nuevo.is_owner;
     
     if (arbol.insertMago(nuevo)) {
@@ -240,7 +240,7 @@ int main() {
                 break;
             case 8:
                 arbol.autoAssignOwner();
-                cout << "Dueño del hechizo actualizado automaticamente.\n";
+                cout << "Dueno del hechizo actualizado automaticamente.\n";
                 break;
             case 9:
                 guardarCambios(arbol);

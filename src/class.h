@@ -131,7 +131,7 @@ void TreeNode::display(int depth) {
     for (int i = 0; i < depth; ++i) cout << "    ";
     cout << content.name << " " << content.last_name << " (ID: " << content.id << ")"
          << " | Magia: " << content.type_magic << " | Edad: " << content.age
-         << " | Dueño: " << (content.is_owner ? "Si" : "No") << "\n";
+         << " | Dueno: " << (content.is_owner ? "Si" : "No") << "\n";
     ChildNode* current = children;
     while (current) {
         current->child->display(depth + 1);
@@ -144,8 +144,6 @@ private:
     TreeNode* root;
     TreeNode* nodes[100]; 
     int total;
-
-    // Funciones auxiliares
     TreeNode* findCurrentOwner();
     TreeNode* findNewOwnerAccordingToRules();
     TreeNode* findCompanion(TreeNode* node);
@@ -318,18 +316,118 @@ TreeNode* MagicTree::findCurrentOwner() {
 }
 
 TreeNode* MagicTree::findNewOwnerAccordingToRules() {
-    TreeNode* currentOwner = findCurrentOwner();
-    
-    return nullptr;
+    TreeNode* current = findCurrentOwner();
+    if (!current || !current->content.is_dead) return nullptr;
+    if (current->content.age > 70) {
+        ChildNode* hijos = current->children;
+        TreeNode* igual = nullptr;
+        TreeNode* masViejo = nullptr;
+
+        while (hijos) {
+            TreeNode* hijo = hijos->child;
+            Mago& m = hijo->content;
+
+            if (!m.is_dead) {
+                if (m.type_magic == current->content.type_magic) return hijo;
+                if (!masViejo || m.age > masViejo->content.age) masViejo = hijo;
+            }
+            hijos = hijos->next;
+        }
+        if (masViejo) return masViejo;
+    }
+    TreeNode* elemental = current->findFirstLivingChildWithMagic("elemental");
+    TreeNode* unique = current->findFirstLivingChildWithMagic("unique");
+    TreeNode* mixed = current->findFirstLivingChildWithMagic("mixed");
+    TreeNode* hombre = current->findFirstLivingMaleChild();
+
+    if (elemental) return elemental;
+    if (unique) return unique;
+    if (mixed) return mixed;
+    if (hombre) return hombre;
+    TreeNode* maestro = findByID(current->content.id_father);
+    if (maestro) {
+        ChildNode* hermanos = maestro->children;
+        while (hermanos) {
+            TreeNode* comp = hermanos->child;
+            if (comp != current && !comp->content.is_dead &&
+                comp->content.type_magic == current->content.type_magic) {
+                return comp;
+            }
+            hermanos = hermanos->next;
+        }
+        hermanos = maestro->children;
+        while (hermanos) {
+            TreeNode* comp = hermanos->child;
+            if (comp != current) {
+                TreeNode* elementalComp = comp->findFirstLivingChildWithMagic("elemental");
+                TreeNode* uniqueComp = comp->findFirstLivingChildWithMagic("unique");
+                if (elementalComp) return elementalComp;
+                if (uniqueComp) return uniqueComp;
+            }
+            hermanos = hermanos->next;
+        }
+    }
+    TreeNode* abuelo = maestro ? findByID(maestro->content.id_father) : nullptr;
+    if (abuelo) {
+        ChildNode* tios = abuelo->children;
+        while (tios) {
+            TreeNode* tio = tios->child;
+            if (tio != maestro && !tio->content.is_dead) return tio;
+            tios = tios->next;
+        }
+    }
+    TreeNode* mejorCandidata = nullptr;
+    for (int i = 0; i < total; ++i) {
+        TreeNode* nodo = nodes[i];
+        Mago& m = nodo->content;
+        if (!m.is_dead && m.gender == 'F' && m.type_magic == "mixed" && nodo->children) {
+            if (!mejorCandidata || m.age < mejorCandidata->content.age)
+                mejorCandidata = nodo;
+        }
+    }
+
+    if (mejorCandidata) return mejorCandidata;
+    for (int i = 0; i < total; ++i) {
+        TreeNode* nodo = nodes[i];
+        Mago& m = nodo->content;
+        if (!m.is_dead && m.gender == 'F') {
+            if (!mejorCandidata || m.age < mejorCandidata->content.age)
+                mejorCandidata = nodo;
+        }
+    }
+
+    return mejorCandidata;
 }
+
 
 void MagicTree::autoAssignOwner() {
     TreeNode* currentOwner = findCurrentOwner();
+
+    if (!currentOwner) {
+        std::cout << "No hay dueno actual registrado.\n";
+        return;
+    }
+    if (!currentOwner->content.is_dead) {
+        std::cout << "El dueno actual (" << currentOwner->content.name << ") esta vivo. No se realiza sucesion.\n";
+        return;
+    }
+
     TreeNode* newOwner = findNewOwnerAccordingToRules();
-    
-    if (currentOwner) currentOwner->content.is_owner = false;
-    if (newOwner) newOwner->content.is_owner = true;
+    currentOwner->content.is_owner = false;
+
+    if (newOwner) {
+        newOwner->content.is_owner = true;
+        std::cout << "Nuevo dueno asignado: " << newOwner->content.name
+                  << " (ID: " << newOwner->content.id << ", Magia: "
+                  << newOwner->content.type_magic << ", Edad: "
+                  << newOwner->content.age << ")\n";
+    } else {
+        std::cout << "No se encontro nuevo dueno segun las reglas.\n";
+    }
 }
+
+
+
 
 void MagicTree::getInheritedSpells(int id, string spells[], int& count) {
     count = 0;
@@ -381,7 +479,7 @@ TreeNode* MagicTree::getRoot() {
 
 void MagicTree::displayTree() {
     if (root) root->display();
-    else cout << "⚠️ Árbol mágico vacío.\n";
+    else cout << "Arbol magico vacio.\n";
 }
 
 int convertirSeguro(const string& str, bool permitirVacio = false) {
@@ -401,7 +499,7 @@ void mostrarSucesionViva(TreeNode* node, int depth = 0) {
         cout << node->content.name << " " << node->content.last_name
              << " (ID: " << node->content.id << ") | Magia: " << node->content.type_magic
              << " | Edad: " << node->content.age
-             << " | Dueño: " << (node->content.is_owner ? "Sí" : "No") << "\n";
+             << " | Dueno: " << (node->content.is_owner ? "Si" : "No") << "\n";
     }
 
     ChildNode* current = node->children;
