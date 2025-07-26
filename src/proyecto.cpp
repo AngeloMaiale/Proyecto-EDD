@@ -180,13 +180,11 @@ int main() {
     MagicTree arbol;
     Mago magos[100];
     int count = 0;
-
     ifstream file("bin/magos.csv");
     if (!file.is_open()) {
         cout << "No se pudo abrir magos.csv\n";
         return 1;
     }
-
     string line;
     getline(file, line); 
 
@@ -207,7 +205,6 @@ int main() {
 
         magos[count++] = w;
     }
-
     file.close();
 
     arbol.buildTree(magos, count);
@@ -256,6 +253,7 @@ int main() {
                 break;
         }
     } while (option != 0);
+
 
     return 0;
 }
