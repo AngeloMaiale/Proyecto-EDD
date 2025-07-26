@@ -80,7 +80,7 @@ void actualizarMago(MagicTree& arbol) {
     getline(cin, input);
     if (!input.empty()) actualizado.age = stoi(input);
     
-    cout << "¿Está muerto? (" << (existente->content.is_dead ? "Si" : "No") << "), 1=Si 0=No: ";
+    cout << "¿Esta muerto? (" << (existente->content.is_dead ? "Si" : "No") << "), 1=Si 0=No: ";
     getline(cin, input);
     if (!input.empty()) actualizado.is_dead = (input == "1");
     
@@ -111,7 +111,7 @@ void insertarMago(MagicTree& arbol) {
     cout << "Ingrese apellido: ";
     getline(cin, nuevo.last_name);
     
-    cout << "Ingrese genero (M/F): ";
+    cout << "Ingrese genero(M/F): ";
     cin >> nuevo.gender;
     
     cout << "Ingrese edad: ";

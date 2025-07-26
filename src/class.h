@@ -6,13 +6,14 @@ using namespace std;
 
 template <class T>
 class Node {
+
 private:
     T content;
     Node<T>* link;
+
 public:
     Node(T, Node<T>* = nullptr);
     ~Node();
-
     T getContent();
     Node<T>* getLink();
     void setLink(Node<T>*);
@@ -70,8 +71,6 @@ struct TreeNode {
 
     TreeNode(Mago w);
     void display(int depth = 0);
-    
-    // Nuevas funciones auxiliares
     bool hasLivingChildren();
     TreeNode* findFirstLivingChildWithMagic(const string& magicType);
     TreeNode* findFirstLivingMaleChild();
@@ -178,7 +177,7 @@ MagicTree::MagicTree() {
 }
 
 MagicTree::~MagicTree() {
-    for (int i = 0; i < total; ++i) {
+    for (int i = 0; i < total; i++) {
         if (nodes[i]) {
             clearChildren(nodes[i]->children);
             delete nodes[i];
@@ -195,18 +194,18 @@ void MagicTree::clearChildren(ChildNode* children) {
 }
 
 TreeNode* MagicTree::findByID(int id) {
-    for (int i = 0; i < total; ++i)
+    for (int i = 0; i < total; i++)
         if (nodes[i] && nodes[i]->content.id == id)
             return nodes[i];
     return nullptr;
 }
 
 void MagicTree::buildTree(Mago* list, int count) {
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; i++) {
         nodes[total++] = new TreeNode(list[i]);
     }
 
-    for (int i = 0; i < total; ++i) {
+    for (int i = 0; i < total; i++) {
         Mago& w = nodes[i]->content;
         if (w.id_father == 0) {
             root = nodes[i];
@@ -262,7 +261,7 @@ bool MagicTree::deleteMago(int id) {
     TreeNode* nodeToDelete = nullptr;
     int indexToDelete = -1;
     
-    for (int i = 0; i < total; ++i) {
+    for (int i = 0; i < total; i++) {
         if (nodes[i] && nodes[i]->content.id == id) {
             nodeToDelete = nodes[i];
             indexToDelete = i;
@@ -304,13 +303,11 @@ bool MagicTree::updateMago(Mago actualizado) {
     TreeNode* node = findByID(actualizado.id);
     if (!node) return false;
     
-    // Actualizar datos
     node->content = actualizado;
     autoAssignOwner();
     return true;
 }
 
-// Implementación de las funciones para la asignación automática del dueño
 TreeNode* MagicTree::findCurrentOwner() {
     for (int i = 0; i < total; ++i) {
         if (nodes[i] && nodes[i]->content.is_owner) {
@@ -323,11 +320,7 @@ TreeNode* MagicTree::findCurrentOwner() {
 TreeNode* MagicTree::findNewOwnerAccordingToRules() {
     TreeNode* currentOwner = findCurrentOwner();
     
-    // Implementar las reglas de asignación aquí
-    // (similar a la implementación anterior pero usando los arrays)
-    // ...
-    
-    return nullptr; // Retornar el nuevo dueño encontrado
+    return nullptr;
 }
 
 void MagicTree::autoAssignOwner() {
